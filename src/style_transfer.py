@@ -117,7 +117,7 @@ def train(model, generated_image, initial_image, ITERS,model_load):
                 print('   Time: {}'.format(time.time() - start_time))
                 start_time = time.time()
 
-                filename = '../outputs/%d.png' % (index)
+                filename = '../Outputs/%d.png' % (index)
                 utils.save_image(filename, gen_image)
 
                 if (index + 1) % 20 == 0:
@@ -165,7 +165,7 @@ def test(model, intput_image, initial_image,model_load):
             saver.restore(sess, ckpt.model_checkpoint_path)
             gen_image= sess.run([input_image])
             gen_image = gen_image + MEAN_PIXELS
-            filename = '../outputs/test.png'
+            filename = '../Outputs/test.png'
             utils.save_image(filename, gen_image)
 
 

@@ -120,7 +120,7 @@ def train(model, generated_image, initial_image, ITERS,model_load):
                 filename = '../outputs/%d.png' % (index)
                 utils.save_image(filename, gen_image)
 
-                if (index + 1) % 1 == 0:
+                if (index + 1) % 20 == 0:
                     saver.save(sess, model_load+'/style_transfer', index)
     writer.close()
 

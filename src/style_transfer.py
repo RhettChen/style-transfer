@@ -72,7 +72,7 @@ def _create_losses(model, input_image, content_image, style_image):
             A = sess.run([model[layer_name] for layer_name in STYLE_LAYERS])                              
         style_loss = _create_style_loss(A, model)
 
-        total_loss = 0.01*content_loss + 1*style_loss
+        total_loss = 0.5*content_loss + 1*style_loss
 
     return content_loss, style_loss, total_loss
 
@@ -86,7 +86,7 @@ def _create_summary(model):
         tf.summary.histogram('total_loss',model['total_loss'])
         return tf.summary.merge_all()
 
-def train(model, generated_image, initial_image, ITERS,model_load):
+def train(model, generated_image, initial_image, ITERS,model_load,trainable_signal):
     skip_step = 1
     with tf.Session() as sess:
         saver = tf.train.Saver()
@@ -97,16 +97,20 @@ def train(model, generated_image, initial_image, ITERS,model_load):
         ckpt = tf.train.get_checkpoint_state(os.path.dirname(model_load+'/checkpoint'))
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess, ckpt.model_checkpoint_path)
+            print("restore")
         initial_step = model['global_step'].eval()
-        
+        ITERS += initial_step
         start_time = time.time()
         for index in range(initial_step, ITERS):
             if index >= 5 and index < 20:
                 skip_step = 10
             elif index >= 20:
                 skip_step = 20
+            if(trainable_signal == False):
+                skip_step = 1
             
             sess.run(model['optimizer'])
+            print("training epoch is ",index)
             if (index + 1) % skip_step == 0:        
                 gen_image, total_loss, summary = sess.run([generated_image, model['total_loss'], 
                                                              model['summary_op']])
@@ -117,14 +121,20 @@ def train(model, generated_image, initial_image, ITERS,model_load):
                 print('   Time: {}'.format(time.time() - start_time))
                 start_time = time.time()
 
-                filename = '../outputs/%d.png' % (index)
-                utils.save_image(filename, gen_image)
+                filename = '../Outputs/%d.png' % (index)
+                if(trainable_signal == False):
+                    print("test output")
+                    filename = '../Outputs/test.png'
+                    utils.save_image(filename,gen_image)
+                    break
+                else:
+                    utils.save_image(filename, gen_image)
 
-                if (index + 1) % 1 == 0:
+                if (index + 1) % 20 == 0:
                     saver.save(sess, model_load+'/style_transfer', index)
     writer.close()
 
-def training(STYLE_IMAGE,CONTENT_IMAGE,LR,ITERS,NOISE_RATIO,model_load,trainable):
+def training(STYLE_IMAGE,CONTENT_IMAGE,LR,ITERS,NOISE_RATIO,model_load,trainable_signal):
     with tf.variable_scope('input') as scope:
         input_image = tf.Variable(np.zeros([1, IMAGE_HEIGHT, IMAGE_WIDTH, 3]), dtype=tf.float32)
     
@@ -144,29 +154,9 @@ def training(STYLE_IMAGE,CONTENT_IMAGE,LR,ITERS,NOISE_RATIO,model_load,trainable
     model['summary_op'] = _create_summary(model)
 
     initial_image = utils.generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, NOISE_RATIO)
-
-    if(trainable):
-        train(model, input_image, initial_image,ITERS,model_load)
-    else:
-        if(os.path.exists(file_name)):
-            test(model,input_image,initial_image,model_load)
-        else:
-            raise IOError("there is no model for test existing")
-
-def test(model, intput_image, initial_image,model_load):
-    with tf.Session() as sess:
-        saver = tf.train.Saver()
-       
-        sess.run(tf.global_variables_initializer())
-        writer = tf.summary.FileWriter("./graphs",sess.graph)
-        sess.run(input_image.assign(initial_image))
-        ckpt = tf.train.get_checkpoint_state(os.path.dirname(model_load+'/checkpoint'))
-        if ckpt and ckpt.model_checkpoint_path:
-            saver.restore(sess, ckpt.model_checkpoint_path)
-            gen_image= sess.run([input_image])
-            gen_image = gen_image + MEAN_PIXELS
-            filename = '../outputs/test.png'
-            utils.save_image(filename, gen_image)
+    print("here: ",trainable_signal)
+    print("style image is ", STYLE_IMAGE)
+    train(model, input_image, initial_image,ITERS,model_load,trainable_signal)
 
 
 

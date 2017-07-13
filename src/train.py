@@ -18,10 +18,14 @@ if __name__=='__main__':
 						default=0.6,dest='noise', type=float)
 	parser.add_argument('-e', help='Number of epochs', default=300,
                         dest='num_epochs', type=int)
-	parser.add_argument('-t',help='whether to train(True) or to test(False)', default=True, dest='trainable',type=bool)
+	parser.add_argument('-t',help='whether to train(True) or to test(False)', default="True", dest='trainable', type = str)
 	parser.add_argument('-load',dest='model_load', default='../Checkpoints',help='the directory of the model you want to load')
 	args = parser.parse_args()
 	trainable = args.trainable
+	if(trainable=="True"):
+		trainable = True
+	else:
+		trainable = False
 	training(args.style,args.content,args.learning_rate,args.num_epochs,args.noise,args.model_load,trainable)
 
 

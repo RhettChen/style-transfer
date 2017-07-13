@@ -42,13 +42,15 @@ def _create_content_loss(p, f):
 
 def _gram_matrix(F, N, M):
     F = tf.reshape(F,[M,N])
-    G = tf.matmul(F,tf.transpose(F))
+    G = tf.matmul(tf.transpose(F),F)
     return G
 
 def _single_style_loss(a, g):
     _, d1, d2,d3 = a.shape
     co_eff = 1/(4*d1*d2*d3*d1*d2*d3)
-    s_style_loss = co_eff * tf.reduce_sum(tf.square(g-a))
+    G = _gram_matrix(g,N,M)
+    A = _gram_matrix(a,N,M)
+    s_style_loss = co_eff * tf.reduce_sum(tf.square(G-A))
     return s_style_loss
 
 def _create_style_loss(A, model):
@@ -72,7 +74,7 @@ def _create_losses(model, input_image, content_image, style_image):
             A = sess.run([model[layer_name] for layer_name in STYLE_LAYERS])                              
         style_loss = _create_style_loss(A, model)
 
-        total_loss = 0.5*content_loss + 1*style_loss
+        total_loss = 0.01*content_loss + 1*style_loss
 
     return content_loss, style_loss, total_loss
 
@@ -122,7 +124,6 @@ def train(model, generated_image, initial_image, ITERS,model_load,trainable_sign
                 start_time = time.time()
 
                 filename = '../Outputs/%d.png' % (index)
-<<<<<<< HEAD
                 if(trainable_signal == False):
                     print("test output")
                     filename = '../Outputs/test.png'
@@ -130,9 +131,6 @@ def train(model, generated_image, initial_image, ITERS,model_load,trainable_sign
                     break
                 else:
                     utils.save_image(filename, gen_image)
-=======
-                utils.save_image(filename, gen_image)
->>>>>>> 88c9b62957d28cad2897c9ab196c1eafba152953
 
                 if (index + 1) % 20 == 0:
                     saver.save(sess, model_load+'/style_transfer', index)
@@ -158,35 +156,8 @@ def training(STYLE_IMAGE,CONTENT_IMAGE,LR,ITERS,NOISE_RATIO,model_load,trainable
     model['summary_op'] = _create_summary(model)
 
     initial_image = utils.generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, NOISE_RATIO)
-<<<<<<< HEAD
-    print("here: ",trainable_signal)
-    print("style image is ", STYLE_IMAGE)
+
     train(model, input_image, initial_image,ITERS,model_load,trainable_signal)
-=======
-
-    if(trainable):
-        train(model, input_image, initial_image,ITERS,model_load)
-    else:
-        if(os.path.exists(file_name)):
-            test(model,input_image,initial_image,model_load)
-        else:
-            raise IOError("there is no model for test existing")
-
-def test(model, intput_image, initial_image,model_load):
-    with tf.Session() as sess:
-        saver = tf.train.Saver()
-       
-        sess.run(tf.global_variables_initializer())
-        writer = tf.summary.FileWriter("./graphs",sess.graph)
-        sess.run(input_image.assign(initial_image))
-        ckpt = tf.train.get_checkpoint_state(os.path.dirname(model_load+'/checkpoint'))
-        if ckpt and ckpt.model_checkpoint_path:
-            saver.restore(sess, ckpt.model_checkpoint_path)
-            gen_image= sess.run([input_image])
-            gen_image = gen_image + MEAN_PIXELS
-            filename = '../Outputs/test.png'
-            utils.save_image(filename, gen_image)
->>>>>>> 88c9b62957d28cad2897c9ab196c1eafba152953
 
 
 

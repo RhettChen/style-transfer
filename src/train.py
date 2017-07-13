@@ -12,7 +12,7 @@ if __name__=='__main__':
 	parser = argparse.ArgumentParser(description=__doc__,formatter_class=class_)
 
 	parser.add_argument('-lr',help="learning rate",default=2.0, dest='learning_rate',type=float)
-	parser.add_argument('-c',dest='content',default='../content/wonderwoman.jpg',help="content image")
+	parser.add_argument('-c',dest='content',default='../content/deadpool.jpg',help="content image")
 	parser.add_argument('-s',dest='style',default='../styles/guernica.jpg',help="style image")
 	parser.add_argument('-n',help='percentage of weight of the noise for intermixing with the content image',
 						default=0.6,dest='noise', type=float)

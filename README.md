@@ -9,3 +9,5 @@ Platform configuration:
 
 The size of image do have an influence on the time of training and 
 I will first resize the input image to 250 x 333 (height x width)
+
+![image](https://github.com/RhettChen/style-transfer/raw/master/training_process.png)

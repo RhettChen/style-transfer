@@ -1,13 +1,32 @@
 # style-transfer
-This is an implementation of style transfer based on VGGnet
+This is an implementation of style transfer based on VGGnet.
 
-This work is based on an assignment of cs20si of stanford
+This work is based on an assignment of cs20si of stanford.
 
 Platform configuration:
 	tensorflow 1.1.0
 	python 3.6.1
 
+You can enter "python train.py" to training with default. 
+Or enter "python train.py -c [context image route] -s [style image route]".
+
 The size of image do have an influence on the time of training and 
 I will first resize the input image to 250 x 333 (height x width)
 
+/src/utils.py:
+	define functions about download VGGnet19, resize image and save image.
+
+/src/style_trainsfer.py:
+	define the training process
+
+/src/vgg_model.py:
+	define the variable and create the convolutional layers for VGGnet19
+
+And I use the context image:
+![image](https://github.com/RhettChen/style-transfer/raw/master/content/deadpool.jpg)
+
+the style inmage:
+![image](https://github.com/RhettChen/style-transfer/raw/master/styles/guernica.jpg)
+
+get the image during the training:
 ![image](https://github.com/RhettChen/style-transfer/raw/master/training_process.png)

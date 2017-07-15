@@ -4,13 +4,17 @@ This is an implementation of style transfer based on VGGnet.
 This work is based on an assignment of cs20si of stanford.
 
 Platform configuration:
+
 	tensorflow 1.1.0
+	
 	python 3.6.1
 
 You can enter "python train.py" to training with default. 
+
 Or enter "python train.py -c [context image route] -s [style image route]".
 
-The size of image do have an influence on the time of training and 
+The size of image do have an influence on the time of training and
+
 I will first resize the input image to 250 x 333 (height x width)
 
 /src/utils.py:

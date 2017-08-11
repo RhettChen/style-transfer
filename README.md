@@ -13,12 +13,10 @@ You can enter "python train.py" to training with default.
 
 Or enter "python train.py -c [context image route] -s [style image route]".
 
-The size of image do have an influence on the time of training and
-
-I will first resize the input image to 250 x 333 (height x width)
+Firstly, I resize the input image to 250 x 333 (height x width)
 
 /src/utils.py:
-	define functions about download VGGnet19, resize image and save image.
+	define functions about download VGGnet19, resizing image and saving image.
 
 /src/style_trainsfer.py:
 	define the training process
